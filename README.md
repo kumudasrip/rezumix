@@ -1,8 +1,5 @@
-Got it! Here's your **final, polished `README.md` file** for **Rezumix**, written in a **clean, professional**, and **detailed** format — without any mention of Multer or backend separation. It includes everything in one file as requested: setup, routes, Gemini logic, architecture, prompts, roadmap, screenshots (placeholder), license, and more.
 
----
-
-```markdown
+```
 # 🚀 Rezumix – AI-Powered Resume & Personality Analyzer
 
 **Rezumix** is a full-stack AI-based application that analyzes user resumes and questionnaire responses to predict personality traits using **Google's Gemini API**. It provides users with detailed insights based on the **OCEAN personality model**, along with personalized career paths and skill recommendations.
