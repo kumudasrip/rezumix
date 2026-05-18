@@ -31,7 +31,7 @@ const ResumeCard = ({ resume, onClick, index }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="group relative bg-[#0A0A0A] border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+                className="group relative bg-gray-950 border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
             >
                 {/* Card Content */}
                 <div className="flex flex-col h-full">

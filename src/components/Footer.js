@@ -57,6 +57,7 @@ const Footer = () => {
                         <ul className="space-y-4">
                             {[
                                 "Resume Checker",
+                                "Resume Builder",
                                 "Career Path",
                                 "Interview Prep",
                                 "Skill Analysis"

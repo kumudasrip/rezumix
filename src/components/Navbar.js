@@ -39,6 +39,7 @@ const Navbar = () => {
 
     const dropdownItems = [
         { name: "Resume Analyzer", href: "/login", description: "Fix errors & beat ATS bots" },
+        { name: "Resume Builder", href: "/login", description: "Build a standout resume" },
         { name: "Career Path", href: "/login", description: "Find high-paying roles" },
         { name: "Personality Fit", href: "/login", description: "Discover your work style" },
         { name: "Mock Interview", href: "/login", description: "AI Voice practice" },

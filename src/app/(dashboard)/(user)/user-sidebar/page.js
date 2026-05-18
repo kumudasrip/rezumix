@@ -10,6 +10,7 @@ import Image from 'next/image'
 const SIDEBAR_LINKS = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "Resume Analyzer", href: "/resume-analyzer", icon: FilePlus },
+    { label: "Resume Builder", href: "/resume-builder", icon: Sparkles },
     { label: "Career Path", href: "/recommend-career", icon: Briefcase },
     { label: "Skill Gap", href: "/skill-gap", icon: LampDesk },
     { label: "Personality Prediction", href: "/personality-prediction", icon: User },

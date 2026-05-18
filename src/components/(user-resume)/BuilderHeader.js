@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { exportToPDF } from "@/lib/exportPDF";
-import Image from "next/image";
-import Link from "next/link";
 
 const TEMPLATES = [
   { id: "modern", label: "Modern" },
@@ -38,16 +36,8 @@ export default function BuilderHeader({
   };
 
   return (
-    <header className="h-16 bg-[#050505] border-b border-white/10 flex items-center justify-between px-4 md:px-6 sticky top-0 z-50">
-      {/* Logo */}
-      <div className="flex items-center gap-3">
-        <Link href="/">
-          <Image src="/rezumix_logo.png" alt="Rezumix" width={120} height={30} className="w-28 h-auto" />
-        </Link>
-        <span className="text-xs text-white/40 border border-white/10 rounded-full px-2 py-0.5">
-          Builder
-        </span>
-      </div>
+    <header className="h-16 bg-gray-950 border-b border-white/10 flex items-center justify-between px-4 md:px-6 sticky top-0 z-50">
+     
 
       {/* Center: Template Switcher (desktop) */}
       <div className="hidden md:flex items-center gap-1 bg-white/5 rounded-lg p-1">
@@ -55,7 +45,7 @@ export default function BuilderHeader({
           <button
             key={t.id}
             onClick={() => setActiveTemplate(t.id)}
-            className={`px-3 py-1.5 text-sm rounded-md transition-all duration-200 active:scale-95 ${
+            className={`px-3 py-1.5 text-sm rounded-md transition-all duration-200 active:scale-95 cursor-pointer ${
               activeTemplate === t.id
                 ? "bg-blue-600 text-white font-medium shadow"
                 : "text-white/50 hover:text-white"

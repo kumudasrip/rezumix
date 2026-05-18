@@ -12,13 +12,13 @@ export default function ResumePreview({ resumeData, activeTemplate }) {
     resumeData.education.length === 0;
 
   return (
-    <div className="p-6 flex flex-col items-center">
+    <div className="p-6 flex flex-col items-center bg-gray-950">
       <p className="text-xs text-white/30 mb-4 uppercase tracking-widest">
         Live Preview
       </p>
 
       {isEmpty ? (
-        <div className="w-full max-w-[680px] aspect-[1/1.414] bg-white/5 border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-3 text-white/20">
+        <div className="w-full max-w-[680px] aspect-[1/1.414] bg-gray-950 border border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-3 text-white/20">
           <svg
             className="w-12 h-12 opacity-30"
             fill="none"
