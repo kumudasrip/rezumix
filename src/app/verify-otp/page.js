@@ -61,38 +61,64 @@ export default function VerifyOTP() {
     const cooldownRef = useRef(null);
     const router = useRouter();
 
-    // Cooldown countdown timer
+    // Prefill email from query parameter if available
     useEffect(() => {
-        if (cooldown <= 0) {
-            if (cooldownRef.current) {
-                clearInterval(cooldownRef.current);
-                cooldownRef.current = null;
+        if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location.search);
+            const emailParam = params.get("email");
+            if (emailParam) {
+                setEmail(emailParam.trim().toLowerCase());
             }
-            return;
         }
+    }, []);
 
-        cooldownRef.current = setInterval(() => {
-            setCooldown((prev) => {
-                if (prev <= 1) {
-                    clearInterval(cooldownRef.current);
-                    cooldownRef.current = null;
-                    return 0;
+    // Local countdown timer and sync with localStorage absolute expiry
+    useEffect(() => {
+        if (!email) return;
+
+        const updateTimer = () => {
+            const stored = localStorage.getItem(`otpCooldown_${email}`);
+            if (stored) {
+                const expiry = parseInt(stored, 10);
+                const remaining = Math.max(0, Math.ceil((expiry - Date.now()) / 1000));
+                setCooldown(remaining);
+                if (remaining <= 0) {
+                    localStorage.removeItem(`otpCooldown_${email}`);
                 }
-                return prev - 1;
-            });
-        }, 1000);
-
-        return () => {
-            if (cooldownRef.current) {
-                clearInterval(cooldownRef.current);
+            } else {
+                setCooldown(0);
             }
         };
-    }, [cooldown]);
 
-    // Start cooldown helper
+        // Run immediately on email change
+        updateTimer();
+
+        // Run countdown every second
+        const interval = setInterval(updateTimer, 1000);
+
+        // Listen for changes from other tabs to instantly synchronize
+        const handleStorageChange = (e) => {
+            if (e.key === `otpCooldown_${email}`) {
+                updateTimer();
+            }
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener("storage", handleStorageChange);
+        };
+    }, [email]);
+
+    // Start cooldown helper (stores absolute expiry in localStorage)
     const startCooldown = useCallback((seconds) => {
-        setCooldown(seconds || COOLDOWN_SECONDS);
-    }, []);
+        if (!email) return;
+        const remainingSeconds = seconds || COOLDOWN_SECONDS;
+        setCooldown(remainingSeconds);
+        const expiry = Date.now() + remainingSeconds * 1000;
+        localStorage.setItem(`otpCooldown_${email.trim().toLowerCase()}`, expiry.toString());
+    }, [email]);
 
     // Format seconds as mm:ss
     const formatTime = (seconds) => {
@@ -110,15 +136,17 @@ export default function VerifyOTP() {
         try {
             const response = await apiClient.verifyOTP(email.trim().toLowerCase(), otp.trim());
 
-            if (response.status === 200) {
-                setSuccess("Verified! Redirecting to login...");
-                setEmail("");
-                setOTP("");
-
-                setTimeout(() => {
-                    router.push("/login");
-                }, 2000);
-            }
+        // Clear cooldown from localStorage on successful verification
+        if (response.status === 200) {
+            setSuccess("Verified! Redirecting to login...");
+            setEmail("");
+            setOTP("");
+            // Remove stored cooldown
+            if (email) localStorage.removeItem(`otpCooldown_${email}`);
+            setTimeout(() => {
+                router.push("/login");
+            }, 2000);
+        }
         } catch (err) {
             if (err?.response?.data?.errors && err.response.data.errors.length > 0) {
                 setError(err.response.data.errors[0].messages[0]);
@@ -151,6 +179,7 @@ export default function VerifyOTP() {
 
             if (response?.data?.success) {
                 setSuccess("A new OTP has been sent to your email!");
+                // Update cooldown sync after successful resend
                 startCooldown(response.data.cooldownSeconds || COOLDOWN_SECONDS);
             }
         } catch (err) {

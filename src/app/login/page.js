@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { Mail, Lock, ArrowRight, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { EMAIL_REGEX } from "@/lib/validation";
+import { apiClient } from "@/lib/api-client";
 
 // --- Components ---
 
@@ -102,6 +103,35 @@ export default function LoginPage() {
         });
 
         if (result?.error) {
+            if (result.error.includes("verified")) {
+                const trimmedEmail = email.trim().toLowerCase();
+                try {
+                    const response = await apiClient.resendOTP(trimmedEmail);
+                    if (response?.data?.success) {
+                        const expiry = Date.now() + (response.data.cooldownSeconds || 60) * 1000;
+                        localStorage.setItem(`otpCooldown_${trimmedEmail}`, expiry.toString());
+                        setError("Account not verified. A new OTP has been sent. Redirecting to verification...");
+                        setTimeout(() => {
+                            router.push(`/verify-otp?email=${encodeURIComponent(trimmedEmail)}`);
+                        }, 2500);
+                    }
+                } catch (err) {
+                    if (err?.response?.status === 429) {
+                        const remaining = err.response.data?.cooldownRemaining || 60;
+                        const expiry = Date.now() + remaining * 1000;
+                        localStorage.setItem(`otpCooldown_${trimmedEmail}`, expiry.toString());
+                        setError(`Account not verified. An OTP was already sent recently (${remaining}s remaining). Redirecting...`);
+                        setTimeout(() => {
+                            router.push(`/verify-otp?email=${encodeURIComponent(trimmedEmail)}`);
+                        }, 2500);
+                    } else {
+                        setError("Account not verified. Failed to send OTP. Please try again.");
+                        setLoading(false);
+                    }
+                }
+                return;
+            }
+
             setError("Invalid credentials. Please try again.");
             setLoading(false);
             return;

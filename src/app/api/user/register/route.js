@@ -64,7 +64,8 @@ export async function POST(req, res) {
         const otpSave = await OTPModel.create({
             email: sanitizedEmail,
             otp,
-            expiresAt: new Date(Date.now() + 10 * 60 * 1000)
+            expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+            lastSentAt: new Date()
         })
 
         if (!otpSave) {
@@ -83,6 +84,9 @@ export async function POST(req, res) {
                 errors: [{ field: "general", messages: ["Could not send OTP email. Please try again later."] }]
             }, { status: 500 })
         }
+
+        // Update lastSentAt to the exact post-SMTP timestamp to eliminate the 3-5s email transport lag
+        await OTPModel.updateOne({ email: sanitizedEmail }, { $set: { lastSentAt: new Date() } });
 
         // Don't return the full user object (leaks password hash, etc.)
         return NextResponse.json({

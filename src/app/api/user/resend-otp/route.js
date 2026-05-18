@@ -57,8 +57,9 @@ export async function POST(req) {
         const existingOTP = await OTPModel.findOne({ email: sanitizedEmail });
 
         if (existingOTP) {
-            const secondsSinceCreated = (Date.now() - new Date(existingOTP.createdAt).getTime()) / 1000;
-            const remainingCooldown = Math.ceil(OTP_COOLDOWN_SECONDS - secondsSinceCreated);
+            const referenceTime = existingOTP.lastSentAt ? new Date(existingOTP.lastSentAt).getTime() : new Date(existingOTP.createdAt).getTime();
+            const secondsSinceLastSent = (Date.now() - referenceTime) / 1000;
+            const remainingCooldown = Math.ceil(OTP_COOLDOWN_SECONDS - secondsSinceLastSent);
 
             if (remainingCooldown > 0) {
                 return NextResponse.json({
@@ -79,11 +80,15 @@ export async function POST(req) {
         await OTPModel.create({
             email: sanitizedEmail,
             otp,
-            expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+            expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+            lastSentAt: new Date()
         });
 
         // ── 6. Send OTP email ──
         await sendOTPEmail(sanitizedEmail, otp);
+
+        // Update lastSentAt to the exact post-SMTP timestamp to eliminate the 3-5s email transport lag
+        await OTPModel.updateOne({ email: sanitizedEmail }, { $set: { lastSentAt: new Date() } });
 
         return NextResponse.json({
             success: true,

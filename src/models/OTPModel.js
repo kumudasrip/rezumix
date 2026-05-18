@@ -1,20 +1,29 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
-const OTPSchema = mongoose.Schema({
+const OTPSchema = new mongoose.Schema({
     email: {
-        type: String
+        type: String,
+        required: true,
+        index: true,
     },
     otp: {
-        type: String
+        type: String,
+        required: true,
     },
     expiresAt: {
-        type: Date
+        type: Date,
+        required: true,
+    },
+    // Tracks the exact moment an OTP was last sent – used for cooldown checks across tabs
+    lastSentAt: {
+        type: Date,
+        default: Date.now,
     },
 }, {
-    timestamps: true
-})
+    timestamps: true, // creates createdAt / updatedAt
+});
 
-// TTL index: MongoDB automatically deletes documents when expiresAt is in the past
+// TTL index – automatically removes docs when expiresAt is in the past
 OTPSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export default mongoose.models.OTP || mongoose.model("OTP", OTPSchema);

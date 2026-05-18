@@ -204,14 +204,20 @@ export default function Register() {
 
             if (response.status === 200) {
                 setSuccess("Registration successful! Redirecting...");
+                const registeredEmail = email.trim().toLowerCase();
+                
+                // Store 60s cooldown expiry in localStorage
+                const expiry = Date.now() + 60 * 1000;
+                localStorage.setItem(`otpCooldown_${registeredEmail}`, expiry.toString());
+
                 setFullName("");
                 setEmail("");
                 setPassword("");
                 setTouched({ fullName: false, email: false, password: false });
 
-                // Redirect to verify-otp after 2 seconds
+                // Redirect to verify-otp with email query parameter after 2 seconds
                 setTimeout(() => {
-                    router.push("/verify-otp");
+                    router.push(`/verify-otp?email=${encodeURIComponent(registeredEmail)}`);
                 }, 2000);
             }
         } catch (err) {
