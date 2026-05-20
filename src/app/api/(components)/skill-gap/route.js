@@ -7,6 +7,8 @@ import mammoth from "mammoth";
 import { extractResumeDetails } from "@/utils/extractResumeData";
 import skillGapModel from "@/models/skillGap.model";
 import OpenAI from "openai";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -168,9 +170,19 @@ export async function POST(req) {
 
 export async function GET() {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         await connectDB();
 
-        const skillGaps = await skillGapModel.find().lean();
+        let query = {};
+        if (session.user.role !== "admin") {
+            query = { userEmail: session.user.email };
+        }
+
+        const skillGaps = await skillGapModel.find(query).lean();
 
         if (!skillGaps) {
             return NextResponse.json({ error: "skill gap record not found" }, { status: 400 });

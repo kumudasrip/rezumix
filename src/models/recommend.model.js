@@ -5,6 +5,9 @@ const recommendSchema = mongoose.Schema(
         recommendUserName: {
             type: String
         },
+        userEmail: {
+            type: String
+        },
         skills: {
             type: [String]
         },

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/db/connectDB"
 import recommendModel from "@/models/recommend.model";
 import OpenAI from "openai";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const openai = new OpenAI({
     apiKey: process.env.GEMINI_API_KEY,
@@ -10,6 +12,11 @@ const openai = new OpenAI({
 
 export async function POST(req) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const getData = await req.json();
 
         const userData = getData.formData
@@ -25,6 +32,7 @@ export async function POST(req) {
 
         await recommendModel.create({
             recommendUserName: userData.userFullName,
+            userEmail: session.user.email,
             skills: userData.skills,
             interests: userData.interests,
             preferredWorkEnvironment: userData.preferredWorkEnvironment,
@@ -148,9 +156,19 @@ export async function POST(req) {
 
 export async function GET() {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         await connectDB()
 
-        const recommendations = await recommendModel.find()
+        let query = {};
+        if (session.user.role !== "admin") {
+            query = { userEmail: session.user.email };
+        }
+
+        const recommendations = await recommendModel.find(query)
 
         if (!recommendations) {
             return NextResponse.json({ error: "no recommendation found" }, { status: 400 })

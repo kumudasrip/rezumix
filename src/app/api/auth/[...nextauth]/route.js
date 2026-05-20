@@ -5,7 +5,7 @@ import userModel from "@/models/userModel";
 import { connectDB } from "@/db/connectDB";
 import { isValidEmail } from "@/lib/validation";
 
-export const authOptions = NextAuth({
+export const authOptions = {
   secret: process.env.JWT_SECRET,
   providers: [
     CredentialsProvider({
@@ -102,6 +102,7 @@ export const authOptions = NextAuth({
       },
     },
   },
-});
+};
 
-export { authOptions as GET, authOptions as POST }
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST }

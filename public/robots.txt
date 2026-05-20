@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.rezumix.in
+
+# Sitemaps
+Sitemap: https://www.rezumix.in/sitemap.xml

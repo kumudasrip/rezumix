@@ -8,6 +8,8 @@ import resumeModel from "@/models/resume.model";
 import { connectDB } from "@/db/connectDB"
 import { GeminiOpenAI } from "@/utils/geminiopenai";
 import OpenAI from "openai";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // Cloudinary Config
 cloudinary.config({
@@ -198,9 +200,19 @@ export async function DELETE(req) {
 
 export async function GET() {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         await connectDB();
 
-        const resumes = await resumeModel.find();
+        let query = {};
+        if (session.user.role !== "admin") {
+            query = { userEmail: session.user.email };
+        }
+
+        const resumes = await resumeModel.find(query);
 
         if (!resumes) {
             return NextResponse.json({ error: "no resume found" }, { status: 400 });
