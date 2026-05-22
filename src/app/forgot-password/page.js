@@ -13,6 +13,8 @@ import {
     Lock
 } from "lucide-react";
 
+import toast from "react-hot-toast";
+
 export default function ForgotPasswordPage() {
 
     const router = useRouter();
@@ -28,6 +30,7 @@ export default function ForgotPasswordPage() {
 
     // SEND OTP
     const handleSendOTP = async (e) => {
+
         e.preventDefault();
 
         setLoading(true);
@@ -46,15 +49,18 @@ export default function ForgotPasswordPage() {
 
             const data = await response.json();
 
-            alert(data.message);
-
             if (data.success) {
+                toast.success(data.message);
                 setStep(2);
+            } else {
+                toast.error(data.message);
             }
 
         } catch (error) {
+
             console.log(error);
-            alert("Something went wrong");
+
+            toast.error("Something went wrong");
         }
 
         setLoading(false);
@@ -62,10 +68,13 @@ export default function ForgotPasswordPage() {
 
     // RESET PASSWORD
     const handleResetPassword = async (e) => {
+
         e.preventDefault();
 
         if (newPassword !== confirmPassword) {
-            alert("Passwords do not match");
+
+            toast.error("Passwords do not match");
+
             return;
         }
 
@@ -87,18 +96,24 @@ export default function ForgotPasswordPage() {
 
             const data = await response.json();
 
-            alert(data.message);
-
             if (data.success) {
+
+                toast.success(data.message);
 
                 setTimeout(() => {
                     router.push("/login");
                 }, 1500);
+
+            } else {
+
+                toast.error(data.message);
             }
 
         } catch (error) {
+
             console.log(error);
-            alert("Something went wrong");
+
+            toast.error("Something went wrong");
         }
 
         setLoading(false);
@@ -122,6 +137,7 @@ export default function ForgotPasswordPage() {
                 </Link>
 
                 <div className="mb-8">
+
                     <h1 className="text-3xl font-bold mb-3">
                         Forgot Password
                     </h1>
@@ -132,19 +148,26 @@ export default function ForgotPasswordPage() {
                             : "Enter the OTP and set your new password."
                         }
                     </p>
+
                 </div>
 
                 {/* STEP 1 */}
+
                 {step === 1 && (
 
-                    <form onSubmit={handleSendOTP} className="space-y-5">
+                    <form
+                        onSubmit={handleSendOTP}
+                        className="space-y-5"
+                    >
 
                         <div className="space-y-2">
+
                             <label className="text-xs uppercase tracking-wider text-slate-400">
                                 Email Address
                             </label>
 
                             <div className="relative">
+
                                 <Mail className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
 
                                 <input
@@ -155,7 +178,9 @@ export default function ForgotPasswordPage() {
                                     required
                                     className="w-full bg-[#050505] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                                 />
+
                             </div>
+
                         </div>
 
                         <button
@@ -163,6 +188,7 @@ export default function ForgotPasswordPage() {
                             disabled={loading || !email}
                             className="w-full py-4 bg-white text-black font-bold rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
                         >
+
                             {loading ? (
                                 <>
                                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -174,12 +200,14 @@ export default function ForgotPasswordPage() {
                                     Send OTP
                                 </>
                             )}
+
                         </button>
 
                     </form>
                 )}
 
                 {/* STEP 2 */}
+
                 {step === 2 && (
 
                     <form
@@ -188,11 +216,13 @@ export default function ForgotPasswordPage() {
                     >
 
                         <div className="space-y-2">
+
                             <label className="text-xs uppercase tracking-wider text-slate-400">
                                 OTP
                             </label>
 
                             <div className="relative">
+
                                 <ShieldCheck className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
 
                                 <input
@@ -203,15 +233,19 @@ export default function ForgotPasswordPage() {
                                     required
                                     className="w-full bg-[#050505] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                                 />
+
                             </div>
+
                         </div>
 
                         <div className="space-y-2">
+
                             <label className="text-xs uppercase tracking-wider text-slate-400">
                                 New Password
                             </label>
 
                             <div className="relative">
+
                                 <Lock className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
 
                                 <input
@@ -222,15 +256,19 @@ export default function ForgotPasswordPage() {
                                     required
                                     className="w-full bg-[#050505] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                                 />
+
                             </div>
+
                         </div>
 
                         <div className="space-y-2">
+
                             <label className="text-xs uppercase tracking-wider text-slate-400">
                                 Confirm Password
                             </label>
 
                             <div className="relative">
+
                                 <Lock className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
 
                                 <input
@@ -241,7 +279,9 @@ export default function ForgotPasswordPage() {
                                     required
                                     className="w-full bg-[#050505] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                                 />
+
                             </div>
+
                         </div>
 
                         <button
@@ -254,6 +294,7 @@ export default function ForgotPasswordPage() {
                             }
                             className="w-full py-4 bg-white text-black font-bold rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
                         >
+
                             {loading ? (
                                 <>
                                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -265,6 +306,7 @@ export default function ForgotPasswordPage() {
                                     Reset Password
                                 </>
                             )}
+
                         </button>
 
                     </form>
