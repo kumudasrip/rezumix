@@ -72,7 +72,10 @@ const features = [
     title: "Check My Resume",
     desc: "Is your resume getting rejected? Our AI scans it like a recruiter and tells you exactly what to fix in seconds.",
     icon: FileText,
-    tags: ["Fix Errors", "Beat the Bot"],
+    tags: [
+      { text: "Fix Errors", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+      { text: "Beat the Bot", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+    ],
     colSpan: "md:col-span-2",
     gradient: "from-blue-500/20 to-blue-500/0"
   },
@@ -80,7 +83,10 @@ const features = [
     title: "Interview Practice",
     desc: "Nervous about interviews? Practice with our AI voice coach. It asks real questions and gives you feedback.",
     icon: Mic,
-    tags: ["Voice Mode", "Instant Feedback"],
+    tags: [
+      { text: "Voice Mode", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+      { text: "Instant Feedback", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+    ],
     colSpan: "md:col-span-1",
     gradient: "from-emerald-500/20 to-emerald-500/0"
   },
@@ -88,7 +94,10 @@ const features = [
     title: "Career Path",
     desc: "Confused about your future? We analyze your skills and suggest high-paying jobs you are good at.",
     icon: Briefcase,
-    tags: ["Find Jobs", "Salary Check"],
+    tags: [
+      { text: "Find Jobs", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+      { text: "Salary Check", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+    ],
     colSpan: "md:col-span-1",
     gradient: "from-purple-500/20 to-purple-500/0"
   },
@@ -96,7 +105,10 @@ const features = [
     title: "Work Personality",
     desc: "Are you a leader or a creator? Find out your work style and which companies suit you best.",
     icon: Users,
-    tags: ["Psychology", "Culture Fit"],
+    tags: [
+      { text: "Psychology", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+      { text: "Culture Fit", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+    ],
     colSpan: "md:col-span-1",
     gradient: "from-pink-500/20 to-pink-500/0"
   },
@@ -104,7 +116,10 @@ const features = [
     title: "Skill Gaps",
     desc: "Want a promotion? See exactly which skills you are missing for that Senior role.",
     icon: Crosshair,
-    tags: ["Learn New Skills", "Grow Fast"],
+    tags: [
+      { text: "Learn New Skills", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+      { text: "Grow Fast", color: "bg-blue-500/15 text-blue-300 border-blue-500/30" },
+    ],
     colSpan: "md:col-span-1",
     gradient: "from-orange-500/20 to-orange-500/0"
   },
@@ -125,9 +140,9 @@ const faqs = [
 ];
 
 const testimonials = [
-  { quote: "I applied to 50 jobs with no luck. After fixing my resume keywords with Rezumix, I got 3 interview calls in one week.", author: "Sarah J."},
-  { quote: "The AI interview mock was scary accurate. It asked me the exact question my actual interviewer asked the next day!", author: "David C."},
-  { quote: "I didn't know I was qualified for Senior roles until the Career Path tool showed me. I just got a 40% salary hike.", author: "Mike R."},
+  { quote: "I applied to 50 jobs with no luck. After fixing my resume keywords with Rezumix, I got 3 interview calls in one week.", author: "Sarah J." },
+  { quote: "The AI interview mock was scary accurate. It asked me the exact question my actual interviewer asked the next day!", author: "David C." },
+  { quote: "I didn't know I was qualified for Senior roles until the Career Path tool showed me. I just got a 40% salary hike.", author: "Mike R." },
 ];
 
 // --- Main Page Component ---
@@ -316,8 +331,11 @@ const Home = () => {
 
                 <div className="flex flex-wrap gap-1.5 sm:gap-2 relative z-10 mt-auto">
                   {feature.tags.map((tag, tIdx) => (
-                    <span key={tIdx} className="text-[10px] sm:text-xs font-medium px-2 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300">
-                      {tag}
+                    <span
+                      key={tIdx}
+                      className={`text-[10px] sm:text-xs font-medium px-3 py-1 rounded-full border backdrop-blur-md transition-all duration-300 hover:scale-105 ${tag.color}`}
+                    >
+                      {tag.text}
                     </span>
                   ))}
                 </div>
