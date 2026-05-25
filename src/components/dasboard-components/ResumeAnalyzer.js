@@ -4,6 +4,7 @@ import { UploadCloud, FileText, CheckCircle, AlertCircle, ArrowRight, Zap, Targe
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { marked } from "marked";
+import { toast } from "sonner";
 import KeywordAnalysis from "@/components/dasboard-components/KeywordAnalysis";
 
 export default function ResumeAnalyzer() {
@@ -43,21 +44,30 @@ export default function ResumeAnalyzer() {
             setFile(selectedFile);
             setFileName(selectedFile.name);
             setError("");
+            toast.success(`File selected: ${selectedFile.name}`);
         } else {
             setFile(null);
             setFileName("");
-            setError("Please upload a .docx or .pdf file");
+            const errorMsg = "Please upload a .docx or .pdf file";
+            setError(errorMsg);
+            toast.error(errorMsg);
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!file) return setError("Please select a file to upload");
+        if (!file) {
+            const msg = "Please select a file to upload";
+            setError(msg);
+            toast.error(msg);
+            return;
+        }
 
         setLoading(true);
         setResult("");
         setError("");
         setKeywordData(null);
+        toast.loading("Analyzing your resume...");
 
         try {
             const userEmail = session?.user?.email;
@@ -71,13 +81,17 @@ export default function ResumeAnalyzer() {
                     text = await extractTextFromPDF(file);
                 } catch (pdfErr) {
                     console.error("PDF extraction failed:", pdfErr);
-                    setError("PDF text extraction failed: " + pdfErr.message);
+                    const errMsg = "PDF text extraction failed: " + pdfErr.message;
+                    setError(errMsg);
+                    toast.error(errMsg);
                     setLoading(false);
                     return;
                 }
 
                 if (!text || text.trim().length === 0) {
-                    setError("Could not extract text from PDF. Make sure it's not a scanned image.");
+                    const errMsg = "Could not extract text from PDF. Make sure it's not a scanned image.";
+                    setError(errMsg);
+                    toast.error(errMsg);
                     setLoading(false);
                     return;
                 }
@@ -101,7 +115,9 @@ export default function ResumeAnalyzer() {
             if (!response.ok) {
                 const errData = await response.json();
                 console.error("API error:", errData);
-                setError("Server error: " + (errData.error || errData.details || "Unknown error"));
+                const errMsg = "Server error: " + (errData.error || errData.details || "Unknown error");
+                setError(errMsg);
+                toast.error(errMsg);
                 setLoading(false);
                 return;
             }
@@ -110,6 +126,7 @@ export default function ResumeAnalyzer() {
             const decoder = new TextDecoder();
 
             setIsVisible((prev) => ({ ...prev, results: true }));
+            toast.success("Analysis in progress...");
 
             while (true) {
                 const { done, value } = await reader.read();
@@ -131,10 +148,14 @@ export default function ResumeAnalyzer() {
                     }
                 }
             }
+            
+            toast.success("Resume analysis complete!");
 
         } catch (err) {
             console.error("Full error:", err);
-            setError("Failed to analyze resume: " + err.message);
+            const errMsg = "Failed to analyze resume: " + err.message;
+            setError(errMsg);
+            toast.error(errMsg);
         } finally {
             setLoading(false);
         }
